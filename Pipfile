@@ -10,7 +10,6 @@ numpy = "*"
 matplotlib = "*"
 networkx = "*"
 pyqt5 = "*"
-pillow-pil = "*"
 pillow = "*"
 
 [requires]
