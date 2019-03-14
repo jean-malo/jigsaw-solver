@@ -3,7 +3,7 @@
 This is a heavily refactored version of my third year University project. See the original at [fyp-jigsaw](https://github.com/jeanmalod/fyp-jigsaw)
 # Install
 
-```git clone https://github.com/jeanmalod/fyp-jigsaw```
+```git clone https://github.com/jeanmalod/jigsaw-solver```
 
 ```cd fyp-jigsaw```
 
