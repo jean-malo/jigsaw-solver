@@ -6,7 +6,19 @@ It aims to solve shapeless jigsaw puzzles without knowing the dimensions. Thus i
 
 At the time it was a research project and code quality wasn't really a concern. You can see some pretty dark patterns in the code that I'm working on fixing. However the maths holds up and the solver is reliable.
 
-See the original at [fyp-jigsaw](https://github.com/jeanmalod/fyp-jigsaw)
+Read more about how it works and the theory behind it [here](https://jean-malo.com/files/jigsaw-solver.pdf).
+
+See the original code at [fyp-jigsaw](https://github.com/jeanmalod/fyp-jigsaw).
+
+# Example
+
+An 88 pieces puzzle solved by this program, it contains two images.
+
+![Sample shuffled puzzle. Contains two images](images/8_by_11_shuffled.jpg)
+
+
+![Solution discovered by the solver.](images/8_by_11_solved.jpg)
+
 # Install
 
 ```shell
@@ -19,12 +31,3 @@ pip install pipenv && pipenv install
 
 pipenv shell && python gui.py
 ```
-
-# Example
-
-An 88 pieces puzzle solved by this program, it contains two images.
-
-![Sample shuffled puzzle. Contains two images](images/8_by_11_shuffled.jpg)
-
-
-![Solution discovered by the solver.](images/8_by_11_solved.jpg)
