@@ -4,6 +4,8 @@
 
 
 [Solution discovered by the solver.](images/8_by_11_solved.jpg)
+
+
 This is a WIP refactored version of my third year University project.
 
 It aims to solve shapeless jigsaw puzzles without knowing the dimensions. Thus it can solve multiple images at the same time as well as cropped up puzzles.
