@@ -9,20 +9,14 @@ At the time it was a research project and code quality wasn't really a concern. 
 See the original at [fyp-jigsaw](https://github.com/jeanmalod/fyp-jigsaw)
 # Install
 
-```
+```shell
 
 git clone https://github.com/jeanmalod/jigsaw-solver
-```
 
-```
 cd fyp-jigsaw
-```
 
-```
 pip install pipenv && pipenv install
-```
 
-```
 pipenv shell && python gui.py
 ```
 
