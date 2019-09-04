@@ -26,11 +26,9 @@ pip install pipenv && pipenv install
 pipenv shell && python gui.py
 ```
 
-# Examples
+# Example
 
 An 88 pieces puzzle solved by this program, it contains two images.
-
-Since this solver is dimension agnostic it can solve puzzles with multiple images and all sorts of shape.
 
 ![Sample shuffled puzzle. Contains two images](images/8_by_11_shuffled.jpg)
 
