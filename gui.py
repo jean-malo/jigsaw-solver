@@ -11,8 +11,9 @@ class MyMainWindow(QMainWindow):
     def __init__(self, parent=None):
         QMainWindow.__init__(self, parent)
         loadUi('guiv2.ui', self)
+        logging.getLogger().setLevel(self.set_log_level())
         self.loadImage.clicked.connect(self.load_clicked)
-        self.run.clicked.connect(self.run_init)
+        self.run.clicked.connect(self.puzzle_pipeline)
         self.saveSolution.clicked.connect(self.save_clicked)
         logTextBox = QPlainTextEditLogger(self)
         logTextBox.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
@@ -43,28 +44,36 @@ class MyMainWindow(QMainWindow):
             self.original_image.save('./images/' + 'shuffled.jpg')
             self.solution_image.save('./images/' + 'sol.jpg')
 
-    # Initiates a puzzle when run is clicked
-    def puzzle_init(self):
-        logging.getLogger().setLevel(self.set_log_level())
+    # Initiates, solve and evaluate a jigsaw-puzzle when run is clicked
+    def puzzle_pipeline(self):
+        puzzle = self.init_puzzle()
+        puzzle = self.solve_puzzzle(puzzle)
+        return puzzle
+
+    def init_puzzle(self):
         piece_w = self.pieceNumW.value()
         piece_h = self.pieceNumH.value()
         self.color_space = self.colorSpace.currentText()
-        solver = Puzzle(self, logging.getLogger(), self.color_space, piece_w, piece_h, self.loadpath,
+        puzzle = Puzzle(self, logging.getLogger(), self.color_space, piece_w, piece_h, self.loadpath,
                         self.shuffle.isChecked(), self.displayInitial.isChecked(), self.displaySol.isChecked())
-        pieces, og_images = solver.build_pieces()
-        if solver.displayInit:
-            solver.shuffled_og_image = solver.show_original_pieces(pieces)
-        result_edge = solver.edges(pieces, 4)
-        solver.results = solver.compatibility(result_edge)
-        solver.treat_results(solver.results)
-        graphres, graph_not_opt = solver.populate_graph(solver.results)
-        res_arr_pos = solver.reconstruct(graphres, pieces, solver.results)
-        coord_arr1 = solver.insert_failure(solver.clean_results(res_arr_pos), solver.results)
-        coord_arr2 = solver.trim_coords(coord_arr1, solver.piece_w * solver.piece_h)
-        solver.neighbor_comparison(pieces, og_images, coord_arr1)
-        solver.direct_comparison(pieces, og_images, coord_arr1)
-        if solver.displayEnd:
-            solver.result_image = solver.show_end_pieces(pieces, solver.clean_results(coord_arr2), solver.displayEnd)
+        return puzzle
+
+    def solve_puzzzle(self, puzzle):
+        pieces, og_images = puzzle.build_pieces()
+        if puzzle.displayInit:
+            puzzle.shuffled_og_image = puzzle.show_original_pieces(pieces)
+        result_edge = puzzle.edges(pieces, 4)
+        puzzle.results = puzzle.compatibility(result_edge)
+        puzzle.treat_results(puzzle.results)
+        graphres, graph_not_opt = puzzle.populate_graph(puzzle.results)
+        res_arr_pos = puzzle.reconstruct(graphres, pieces, puzzle.results)
+        coord_arr1 = puzzle.insert_failure(puzzle.clean_results(res_arr_pos), puzzle.results)
+        coord_arr2 = puzzle.trim_coords(coord_arr1, puzzle.piece_w * puzzle.piece_h)
+        puzzle.neighbor_comparison(pieces, og_images, coord_arr1)
+        puzzle.direct_comparison(pieces, og_images, coord_arr1)
+        if puzzle.displayEnd:
+            puzzle.result_image = puzzle.show_end_pieces(pieces, puzzle.clean_results(coord_arr2), puzzle.displayEnd)
+        return puzzle
 
 
 class QPlainTextEditLogger(logging.Handler):
