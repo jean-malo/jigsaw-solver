@@ -19,6 +19,8 @@ class Puzzle:
         self.shuffle = shuffle
         self.displayInit = displayInitial
         self.displayEnd = displayEnd
+        self.og_image = None
+        self.result_image = None
 
     # Build the pieces given an image and a number of pieces
     def build_pieces(self):
@@ -37,6 +39,7 @@ class Puzzle:
         img_array = pieces
         if self.shuffle:
             pieces = np.random.permutation(pieces)
+        self.og_image = self.build_og_image(pieces)
         return pieces, img_array
 
     # Builds 4 edges for each image in np_image
@@ -417,7 +420,25 @@ class Puzzle:
                     print('Position is null')
             return coord_arr
 
-    def show_original_pieces(self, np_array, display=False):
+    def build_og_image(self, np_array):
+        y = 0
+        w = len(np_array[0][0, :])
+        h = len(np_array[0][:, 0])
+        result = Image.new('RGB', (w * self.piece_w, h * self.piece_h))
+        y_offset = 0
+        for i in range(self.piece_h):
+            x = 0
+            for j in range(self.piece_w):
+                id = i * self.piece_w + j
+                temp_img = Image.fromarray(np_array[id])
+                x_offset = len(np_array[id][0, :])
+                y_offset = len(np_array[id][:, 0])
+                result.paste(temp_img, (x, y))
+                x += x_offset
+            y += y_offset
+        return result
+
+    def show_original_pieces(self, np_array):
         y = 0
         w = len(np_array[0][0, :])
         h = len(np_array[0][:, 0])
@@ -437,7 +458,7 @@ class Puzzle:
         return result
 
     # Displays the image given coordinates.
-    def show_end_pieces(self, images, coord_arr, display=False):
+    def build_end_image(self, images, coord_arr, display=False):
         """
         Show pieces given an image array. Fills missing pieces with black ones.
         """
@@ -471,9 +492,7 @@ class Puzzle:
         cropBox = (min(non_empty_rows), max(non_empty_rows), min(non_empty_columns), max(non_empty_columns))
         image_data_new = image_data[cropBox[0]:cropBox[1] + 1, cropBox[2]:cropBox[3] + 1, :]
         new_image = Image.fromarray(image_data_new)
-        if display:
-            new_image.show()
-        return new_image
+        self.result_image = new_image
 
     def jpg_image_to_array(self):
         """
@@ -509,7 +528,6 @@ class Puzzle:
             cand = 0
             count = 0
             if val != -1:
-                print(shuffled_piece, original_piece)
                 tar_val = [np.array_equal(shuffled_piece[val], x) for x in original_piece].index(True)
                 yy, xx = np.transpose(np.where(tar_val == list_stacked))[0]
                 if y - 1 > 0 and yy - 1 > 0:
@@ -532,9 +550,8 @@ class Puzzle:
                     try:
                         idx = np.ravel_multi_index((yy, xx - 1), list_stacked.shape)
                     except ValueError as e:
-                        print(y, x, val, yy, xx)
-                    if np.all(shuffled_piece[coordinates[y, x - 1]] == original_piece[idx]):
-                        count += 1
+                        if np.all(shuffled_piece[coordinates[y, x - 1]] == original_piece[idx]):
+                            count += 1
                 try:
                     counts.append(count / cand)
                 except:

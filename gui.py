@@ -12,6 +12,7 @@ class MyMainWindow(QMainWindow):
         QMainWindow.__init__(self, parent)
         loadUi('guiv2.ui', self)
         logging.getLogger().setLevel(self.set_log_level())
+        self.puzzle = None
         self.loadImage.clicked.connect(self.load_clicked)
         self.run.clicked.connect(self.puzzle_pipeline)
         self.saveSolution.clicked.connect(self.save_clicked)
@@ -36,44 +37,48 @@ class MyMainWindow(QMainWindow):
         self.run.setEnabled(True)
 
     def save_clicked(self):
+        formats = "Portable Network Graphic (*.jpg);;"
         try:
             path = QFileDialog.getSaveFileName(self, directory="./images")[0]
-            self.original_image.save(path + 'og.jpg')
-            self.solution_image.save(path + 'sol.jpg')
+            self.puzzle.og_image.save(path + "_shuffled.jpg")
+            self.puzzle.result_image.save(path + "_solved.jpg")
         except Exception as e:
-            self.original_image.save('./images/' + 'shuffled.jpg')
-            self.solution_image.save('./images/' + 'sol.jpg')
+            print(e)
+            self.puzzle.og_image.save('./images/' + '_shuffled.jpg')
+            self.puzzle.result_image.save('./images/' + '_solved.jpg')
 
     # Initiates, solve and evaluate a jigsaw-puzzle when run is clicked
     def puzzle_pipeline(self):
-        puzzle = self.init_puzzle()
-        puzzle = self.solve_puzzzle(puzzle)
-        return puzzle
+        self.saveSolution.setEnabled(False)
+        self.puzzle = self.init_puzzle()
+        self.solve_puzzzle()
+        self.saveSolution.setEnabled(True)
 
     def init_puzzle(self):
         piece_w = self.pieceNumW.value()
         piece_h = self.pieceNumH.value()
+        print(piece_w, piece_h)
         self.color_space = self.colorSpace.currentText()
         puzzle = Puzzle(self, logging.getLogger(), self.color_space, piece_w, piece_h, self.loadpath,
                         self.shuffle.isChecked(), self.displayInitial.isChecked(), self.displaySol.isChecked())
         return puzzle
 
-    def solve_puzzzle(self, puzzle):
-        pieces, og_images = puzzle.build_pieces()
-        if puzzle.displayInit:
-            puzzle.shuffled_og_image = puzzle.show_original_pieces(pieces)
-        result_edge = puzzle.edges(pieces, 4)
-        puzzle.results = puzzle.compatibility(result_edge)
-        puzzle.treat_results(puzzle.results)
-        graphres, graph_not_opt = puzzle.populate_graph(puzzle.results)
-        res_arr_pos = puzzle.reconstruct(graphres, pieces, puzzle.results)
-        coord_arr1 = puzzle.insert_failure(puzzle.clean_results(res_arr_pos), puzzle.results)
-        coord_arr2 = puzzle.trim_coords(coord_arr1, puzzle.piece_w * puzzle.piece_h)
-        puzzle.neighbor_comparison(pieces, og_images, coord_arr1)
-        puzzle.direct_comparison(pieces, og_images, coord_arr1)
-        if puzzle.displayEnd:
-            puzzle.result_image = puzzle.show_end_pieces(pieces, puzzle.clean_results(coord_arr2), puzzle.displayEnd)
-        return puzzle
+    def solve_puzzzle(self):
+        pieces, og_images = self.puzzle.build_pieces()
+        if self.puzzle.displayInit:
+            self.puzzle.og_image.show()
+        result_edge = self.puzzle.edges(pieces, 4)
+        self.puzzle.results = self.puzzle.compatibility(result_edge)
+        self.puzzle.treat_results(self.puzzle.results)
+        graphres, graph_not_opt = self.puzzle.populate_graph(self.puzzle.results)
+        res_arr_pos = self.puzzle.reconstruct(graphres, pieces, self.puzzle.results)
+        coord_arr1 = self.puzzle.insert_failure(self.puzzle.clean_results(res_arr_pos), self.puzzle.results)
+        coord_arr2 = self.puzzle.trim_coords(coord_arr1, self.puzzle.piece_w * self.puzzle.piece_h)
+        self.puzzle.neighbor_comparison(pieces, og_images, coord_arr1)
+        self.puzzle.direct_comparison(pieces, og_images, coord_arr1)
+        self.puzzle.build_end_image(pieces, self.puzzle.clean_results(coord_arr2))
+        if self.puzzle.displayEnd:
+            self.puzzle.result_image.show()
 
 
 class QPlainTextEditLogger(logging.Handler):
