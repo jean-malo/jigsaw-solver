@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "jigsaw_solver"
+version = "0.1.0"
+description = "PoC to solve jigsaw puzzles using Mahalnobis Distance"
+authors = ["Jean-Malo Delignon <jmdelignon@gmail.com>"]
+maintainers = ["Jean-Malo Delignon <jmdelignon@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+homepage = "https://jean-malo.com"
+repository = "https://github.com/jean-malo/jigsaw-solver/"
+documentation = "https://github.com/jean-malo/jigsaw-solver/"
+
+
+[tool.poetry.dependencies]
+python = "^3.6"
+numpy = "*"
+matplotlib = "*"
+networkx = "*"
+pyqt5 = "*"
+pillow = "*"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"

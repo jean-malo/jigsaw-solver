@@ -27,7 +27,7 @@ git clone https://github.com/jeanmalod/jigsaw-solver
 
 cd fyp-jigsaw
 
-pip install pipenv && pipenv install
+make download-poetry && make install
 
-pipenv shell && python gui.py
+poetry shell && python gui.py
 ```
